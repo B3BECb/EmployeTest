@@ -1,0 +1,1 @@
+{"version":3,"file":"appConsts.js","sourceRoot":"","sources":["appConsts.ts"],"names":[],"mappings":";;AAAA,MAAa,SAAS;;AAEd,gBAAM,GAAG,cAAc,CAAC;AACxB,mBAAS,GAAG,KAAK,CAAC;AAH1B,8BAIC","sourcesContent":["export class AppConsts\r\n{\r\n\tstatic dbName = \"emloyeTestDb\";\r\n\tstatic mongoPort = 27017;\r\n}"]}
