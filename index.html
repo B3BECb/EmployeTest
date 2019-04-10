@@ -3,13 +3,57 @@
 <head>
 	<meta charset = "UTF-8">
 	<title>Title</title>
+	<style>
+		.startDialog
+		{
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+		}
+		.startDialog div
+		{
+			display: grid;
+			grid-auto-columns: 300px;
+			margin-bottom: 8px;
+		}
+	</style>
 </head>
 <body>
-<div>Инициализация приложения</div>
-<div data-id="percent"></div>
-<div data-id="status"></div>
+<div id="mainContainer">
+	<div>Инициализация приложения</div>
+	<div data-id = "percent"></div>
+	<div data-id = "status"></div>
+</div>
 </body>
 </html>
 <script>
-	require("./renderer.js");
+	document.addEventListener('DOMContentLoaded', () =>
+	{
+		require("./renderer.js");
+	});
 </script>
+<template id = "startDialog">
+	<div class = "startDialog">
+		<div>
+			<label for = "_txtFio">ФИО:</label><input type = "text"
+													  id = "_txtFio">
+		</div>
+		<div>
+			<label for = "_txtComment">Дополнительная информация:</label>
+			<textarea id = "_txtComment"
+					  style="height: 200px; resize: none;"></textarea>
+		</div>
+		<div>
+			<label for = "_cmbFam">Тип семейного положения:</label><select id = "_cmbFam"></select>
+		</div>
+		<div>
+			<label for = "_cmbAge">Возраст:</label><select id = "_cmbAge"></select>
+		</div>
+		<div id = "_lstStuds">
+			<button id = "_btnNewStud">+ образование</button>
+		</div>
+		<div id = "_lstExp">
+			<button id = "_btnNewExp">+ опыт работы</button>
+		</div>
+	</div>
+</template>
