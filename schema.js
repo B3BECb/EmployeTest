@@ -37,6 +37,18 @@ class MongoContextFactory {
         }
         return isConnected;
     }
+    async SelectAsync(model, represent, filter) {
+        return await new Promise((resolve, reject) => {
+            model.find(filter, (err, res) => {
+                if (err) {
+                    console.error(err);
+                    reject();
+                }
+                let represented = res.map(x => represent(x));
+                resolve(represented);
+            });
+        });
+    }
 }
 exports.MongoContextFactory = MongoContextFactory;
 //# sourceMappingURL=schema.js.map

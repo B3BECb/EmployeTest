@@ -66,4 +66,23 @@ export class MongoContextFactory
 
 		return isConnected;
 	}
+
+	public async SelectAsync<T>(model: Model<any>, represent: Function, filter: object) : Promise<T[]>
+	{
+		return await new Promise((resolve, reject) =>
+		{
+			model.find(filter, (err, res) =>
+			{
+				if(err)
+				{
+					console.error(err);
+					reject();
+				}
+
+				let represented:T[] = res.map(x => represent(x));
+
+				resolve(represented);
+			});
+		});
+	}
 }

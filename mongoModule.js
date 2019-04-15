@@ -167,9 +167,21 @@ class DbDataImpl {
         this._pays.push(dbEntry);
     }
     async ImplJobsData(jobModel) {
-        let job = new JobEntitie_1.JobEntitie("Охранник", this._ages[0], this._studs[0], this._exps[0], this._fams[0], this._pays[0], "Охрана помещений", "Рабочая неделя", 0);
+        let job = new JobEntitie_1.JobEntitie("Охранник", this._ages[0], this._studs[2], this._exps[0], this._fams[3], this._pays[0], "Охрана помещений", "Рабочая неделя", 0);
         let entry = new jobModel(job.ToDbEntry());
         let dbEntry = await this.Save(entry, RatedEntitieBase_1.RatedEntitieBase.Represent);
+        this._jobs.push(dbEntry);
+        job = new JobEntitie_1.JobEntitie("Системный администратор", this._ages[2], this._studs[5], this._exps[1], this._fams[1], this._pays[1], "Системный администратор", "Рабочая неделя", 0);
+        entry = new jobModel(job.ToDbEntry());
+        dbEntry = await this.Save(entry, RatedEntitieBase_1.RatedEntitieBase.Represent);
+        this._jobs.push(dbEntry);
+        job = new JobEntitie_1.JobEntitie("Программист", this._ages[2], this._studs[7], this._exps[2], this._fams[1], this._pays[2], "Системный администратор", "Рабочая неделя", 0);
+        entry = new jobModel(job.ToDbEntry());
+        dbEntry = await this.Save(entry, RatedEntitieBase_1.RatedEntitieBase.Represent);
+        this._jobs.push(dbEntry);
+        job = new JobEntitie_1.JobEntitie("Менеджер направления", this._ages[3], this._studs[9], this._exps[4], this._fams[2], this._pays[3], "Менеджер направления разработки ПО", "Рабочая неделя", 0);
+        entry = new jobModel(job.ToDbEntry());
+        dbEntry = await this.Save(entry, RatedEntitieBase_1.RatedEntitieBase.Represent);
         this._jobs.push(dbEntry);
     }
     async Save(dbEntry, represent) {

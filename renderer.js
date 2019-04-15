@@ -16,6 +16,7 @@ var Pages;
             async Start() {
                 let percent = document.querySelector('[data-id="percent"]');
                 let status = document.querySelector('[data-id="status"]');
+                let state = document.querySelector('[data-id="state"]');
                 percent.textContent = "0%";
                 status.textContent = "Подключение к БД...";
                 if (!await this.Factory.TryConnectAsync()) {
@@ -32,6 +33,7 @@ var Pages;
                     }
                     percent.textContent = "100%";
                     status.textContent = "Готово";
+                    state.textContent = "Готово";
                 }
                 catch (exc) {
                     console.error(exc);
@@ -39,9 +41,10 @@ var Pages;
             }
         }
         let main = new Main();
-        let wndController = new WindowsController_1.WindowsController();
+        let wndController;
         let initialize = async () => {
             await main.Start();
+            wndController = new WindowsController_1.WindowsController(main.Factory);
             wndController.ShowStartDialog();
         };
         initialize();

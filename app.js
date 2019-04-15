@@ -14,6 +14,7 @@ function createWindow(page) {
     mainWindow = new BrowserWindow({
         width: 800,
         height: 600,
+        resizable: false,
         webPreferences: {
             nodeIntegration: true,
         },
@@ -70,6 +71,9 @@ const beginStartingMongo = function (appRoot) {
     });
     mongoProcess.on('exit', function (code) {
         console.log(logTag, '[MONGOD-EXIT]', code.toString());
+    });
+    mongoProcess.on('error', function (err) {
+        console.log(logTag, '[MONGOD-ERROR]', err.toString());
         createWindow('error.html');
     });
 };

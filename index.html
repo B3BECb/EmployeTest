@@ -4,25 +4,187 @@
 	<meta charset = "UTF-8">
 	<title>Title</title>
 	<style>
+		body
+		{
+			margin: 0;
+		}
+
+		body.dialogMode
+		{
+			overflow: hidden;
+		}
+
+		.dialog,
 		.startDialog
 		{
-			display: flex;
+			display:        flex;
 			flex-direction: column;
-			align-items: center;
+			align-items:    center;
 		}
+
 		.startDialog div
 		{
-			display: grid;
+			display:           grid;
 			grid-auto-columns: 300px;
-			margin-bottom: 8px;
+			margin-bottom:     8px;
+			background:        bisque
+		}
+
+		#state
+		{
+			position:        fixed;
+			left:            0;
+			bottom:          0;
+			background:      rgba(177, 186, 218, 0.31);
+
+			height:          30px;
+
+			display:         flex;
+			justify-content: center;
+			align-items:     center;
+		}
+
+		#state .text
+		{
+			margin: 0 8px;
+		}
+
+		.hidden
+		{
+			display: none;
+		}
+
+		.dialog
+		{
+			position:        fixed;
+			width:           100vw;
+			height:          100vh;
+			z-index:         10;
+			background:      rgba(0, 0, 0, 0.3);
+			justify-content: center;
+		}
+
+		.dialog .window
+		{
+			background: whitesmoke;
+			padding:    8px;
+		}
+
+		.dialog .window .title
+		{
+			font-weight:    bold;
+			padding-bottom: 8px;
+		}
+
+		.dialog .window .body,
+		.dialog .window .body .section,
+		.dialog .window .buttons
+		{
+			margin-top: 8px;
+		}
+
+		.dialog .window .body textarea,
+		.dialog .window .body select
+		{
+			width: calc(100% - 8px);
+		}
+
+		.dialog .window .body textarea
+		{
+			resize: none;
+			height: 100px;
+		}
+
+		.dialog .window .buttons
+		{
+			display:         flex;
+			justify-content: flex-end;
+		}
+
+		.dialog .window .buttons button
+		{
+			margin-left: 8px;
+		}
+
+		.btn.next.fixed
+		{
+			position: fixed;
+			right:    8px;
+			bottom:   8px;
+
+			height:   30px;
+			width:    70px;
 		}
 	</style>
 </head>
 <body>
-<div id="mainContainer">
+<div id = "dialog"
+	 class = "dialog hidden">
+	<div id = "_wndNewStud"
+		 class = "window hidden">
+		<div class = "title">Добавить образование</div>
+		<div class = "body">
+			<div class = "section">
+				<div class = "section">
+					<label for = "_cmbStud">Уровень образования:</label>
+				</div>
+				<div class = "section">
+					<select id = "_cmbStud"></select>
+				</div>
+			</div>
+			<div class = "section">
+				<div>
+					<label for = "_txtStudComment">Комментарий:</label>
+				</div>
+				<div>
+					<textarea id = "_txtStudComment"></textarea>
+				</div>
+			</div>
+		</div>
+		<div class = "buttons">
+			<button data-action = "ok">ОК</button>
+			<button data-action = "cancel"
+					data-dialog-id = "_wndNewStud">Отмена
+			</button>
+		</div>
+	</div>
+	<div id = "_wndNewExp"
+		 class = "window hidden">
+		<div class = "title">Добавить опыт работы</div>
+		<div class = "body">
+			<div class = "section">
+				<div class = "section">
+					<label for = "_cmbExp">Опыт работы:</label>
+				</div>
+				<div class = "section">
+					<select id = "_cmbExp"></select>
+				</div>
+			</div>
+			<div class = "section">
+				<div>
+					<label for = "_txtExpComment">Комментарий:</label>
+				</div>
+				<div>
+					<textarea id = "_txtExpComment"></textarea>
+				</div>
+			</div>
+		</div>
+		<div class = "buttons">
+			<button data-action = "ok">ОК</button>
+			<button data-action = "cancel"
+					data-dialog-id = "_wndNewExp">Отмена
+			</button>
+		</div>
+	</div>
+</div>
+<div id = "mainContainer">
 	<div>Инициализация приложения</div>
 	<div data-id = "percent"></div>
 	<div data-id = "status"></div>
+</div>
+<div id = "state">
+	<span class = "text"
+		  data-id = "state">Инициализация...</span>
 </div>
 </body>
 </html>
@@ -34,14 +196,14 @@
 </script>
 <template id = "startDialog">
 	<div class = "startDialog">
-		<div>
+		<div style = "margin-top: 8px;">
 			<label for = "_txtFio">ФИО:</label><input type = "text"
 													  id = "_txtFio">
 		</div>
 		<div>
 			<label for = "_txtComment">Дополнительная информация:</label>
 			<textarea id = "_txtComment"
-					  style="height: 200px; resize: none;"></textarea>
+					  style = "height: 200px; resize: none;"></textarea>
 		</div>
 		<div>
 			<label for = "_cmbFam">Тип семейного положения:</label><select id = "_cmbFam"></select>
@@ -49,11 +211,14 @@
 		<div>
 			<label for = "_cmbAge">Возраст:</label><select id = "_cmbAge"></select>
 		</div>
-		<div id = "_lstStuds">
+		<div>
+			<div id = "_lstStuds"></div>
 			<button id = "_btnNewStud">+ образование</button>
 		</div>
-		<div id = "_lstExp">
+		<div>
+			<div id = "_lstExps"></div>
 			<button id = "_btnNewExp">+ опыт работы</button>
 		</div>
 	</div>
+	<button class = "btn next fixed">Далее</button>
 </template>

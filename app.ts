@@ -15,9 +15,10 @@ app.commandLine.appendSwitch('remote-debugging-port', '9222');
 
 function createWindow(page)
 {
-	mainWindow    = new BrowserWindow({
+	mainWindow = new BrowserWindow({
 		width:          800,
 		height:         600,
+		resizable:      false,
 		webPreferences: {
 			nodeIntegration: true,
 		},
@@ -71,6 +72,7 @@ const beginStartingMongo = function(appRoot)
 	shell.rm('-f', lockfile);
 
 	console.log(logTag, 'trying to spawn mongod process with port: ' + AppConsts.mongoPort);
+
 	mongoProcess = spawn(path, [
 		'--dbpath', dataDir,
 		'--port', AppConsts.mongoPort,
@@ -97,6 +99,11 @@ const beginStartingMongo = function(appRoot)
 	mongoProcess.on('exit', function(code)
 	{
 		console.log(logTag, '[MONGOD-EXIT]', code.toString());
+	});
+
+	mongoProcess.on('error', function(err)
+	{
+		console.log(logTag, '[MONGOD-ERROR]', err.toString());
 		createWindow('error.html');
 	});
 };
@@ -104,7 +111,7 @@ const beginStartingMongo = function(appRoot)
 app.on('ready', () =>
 {
 	let appRoot = path.resolve(__dirname);
-	beginStartingMongo(appRoot)
+	beginStartingMongo(appRoot);
 });
 
 app.on('window-all-closed', function()

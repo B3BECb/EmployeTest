@@ -1,7 +1,7 @@
 import { MongoContextFactory } from "./schema";
 import { AppConsts } from "./appConsts";
 
-import {DbCreator} from "./mongoModule";
+import { DbCreator } from "./mongoModule";
 import { WindowsController } from "./WindowsController";
 
 namespace Pages.Index
@@ -20,19 +20,20 @@ namespace Pages.Index
 		async Start()
 		{
 			let percent = document.querySelector('[data-id="percent"]');
-			let status = document.querySelector('[data-id="status"]');
+			let status  = document.querySelector('[data-id="status"]');
+			let state   = document.querySelector('[data-id="state"]');
 
 			percent.textContent = "0%";
-			status.textContent = "Подключение к БД...";
+			status.textContent  = "Подключение к БД...";
 
 			if(!await this.Factory.TryConnectAsync())
 			{
-				alert(`Не удалось подключиться к локальной БД ${AppConsts.dbName} по порту ${AppConsts.mongoPort}`)
+				alert(`Не удалось подключиться к локальной БД ${ AppConsts.dbName } по порту ${ AppConsts.mongoPort }`);
 				status.textContent = "Ошибка подключения к БД...";
 			}
 
 			percent.textContent = "10%";
-			status.textContent = "Верификация данных БД...";
+			status.textContent  = "Верификация данных БД...";
 
 			try
 			{
@@ -45,6 +46,7 @@ namespace Pages.Index
 
 				percent.textContent = "100%";
 				status.textContent  = "Готово";
+				state.textContent   = "Готово";
 			}
 			catch(exc)
 			{
@@ -54,11 +56,12 @@ namespace Pages.Index
 	}
 
 	let main = new Main();
-	let wndController = new WindowsController();
+	let wndController: WindowsController;
 
-	let initialize = async () =>
+	let initialize = async() =>
 	{
 		await main.Start();
+		wndController = new WindowsController(main.Factory);
 		wndController.ShowStartDialog();
 	};
 
