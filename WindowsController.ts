@@ -91,6 +91,9 @@ class WindowsController
 			() => this.SaveExp("_wndNewExp"));
 		document.querySelector("#_wndNewStud [data-action='ok']").addEventListener('click',
 			() => this.SaveStud("_wndNewStud"));
+
+		document.querySelector(".btn.next.fixed").addEventListener('click',
+			() => this.OpenTest());
 	}
 
 	private async FillInputs()
@@ -188,6 +191,11 @@ class WindowsController
 
 		this._lstExps.appendChild(node);
 		this.CloseDialog(id);
+	}
+
+	private OpenTest()
+	{
+
 	}
 
 	private ShowDialog(id: string)
