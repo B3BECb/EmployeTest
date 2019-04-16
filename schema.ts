@@ -2,6 +2,7 @@ import { Model } from "mongoose";
 import { RatedEntitieBase } from "./entities/RatedEntitieBase";
 import { CommentableEntitieBase } from "./entities/CommentableEntitieBase";
 import { JobEntitie } from "./entities/JobEntitie";
+import { ApplicantEntity } from "./entities/ApplicantEntity";
 
 const mongoose = require('mongoose');
 
@@ -16,6 +17,7 @@ export class MongoContextFactory
 	public PaymentModel: Model<any>;
 
 	public JobModel: Model<any>;
+	public ApplicantModel: Model<any>;
 
 	private readonly url: string;
 
@@ -62,12 +64,15 @@ export class MongoContextFactory
 
 			let jobSchema = new mongoose.Schema(JobEntitie.GetSchemaInfo());
 			this.JobModel = mongoose.model("job", jobSchema);
+
+			let applicantSchema = new mongoose.Schema(ApplicantEntity.GetSchemaInfo());
+			this.ApplicantModel = mongoose.model("applicant", applicantSchema);
 		}
 
 		return isConnected;
 	}
 
-	public async SelectAsync<T>(model: Model<any>, represent: Function, filter: object) : Promise<T[]>
+	public async SelectAsync<T>(model: Model<any>, represent: Function, filter: object): Promise<T[]>
 	{
 		return await new Promise((resolve, reject) =>
 		{
@@ -79,7 +84,7 @@ export class MongoContextFactory
 					reject();
 				}
 
-				let represented:T[] = res.map(x => represent(x));
+				let represented: T[] = res.map(x => represent(x));
 
 				resolve(represented);
 			});

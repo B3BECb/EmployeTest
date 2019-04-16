@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const RatedEntitieBase_1 = require("./entities/RatedEntitieBase");
 const CommentableEntitieBase_1 = require("./entities/CommentableEntitieBase");
 const JobEntitie_1 = require("./entities/JobEntitie");
+const ApplicantEntity_1 = require("./entities/ApplicantEntity");
 const mongoose = require('mongoose');
 class MongoContextFactory {
     constructor(dbName, port) {
@@ -34,6 +35,8 @@ class MongoContextFactory {
             this.PaymentModel = mongoose.model("payment", ratedEntitiesSchema);
             let jobSchema = new mongoose.Schema(JobEntitie_1.JobEntitie.GetSchemaInfo());
             this.JobModel = mongoose.model("job", jobSchema);
+            let applicantSchema = new mongoose.Schema(ApplicantEntity_1.ApplicantEntity.GetSchemaInfo());
+            this.ApplicantModel = mongoose.model("applicant", applicantSchema);
         }
         return isConnected;
     }

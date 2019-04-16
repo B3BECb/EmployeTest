@@ -52,6 +52,7 @@ class WindowsController {
         document.querySelectorAll("[data-action='cancel']").forEach((x) => x.addEventListener('click', () => this.CloseDialog(x.dataset.dialogId)));
         document.querySelector("#_wndNewExp [data-action='ok']").addEventListener('click', () => this.SaveExp("_wndNewExp"));
         document.querySelector("#_wndNewStud [data-action='ok']").addEventListener('click', () => this.SaveStud("_wndNewStud"));
+        document.querySelector(".btn.next.fixed").addEventListener('click', () => this.OpenTest());
     }
     async FillInputs() {
         this.StateInput.textContent = "Инициализация поля возрастов...";
@@ -114,6 +115,8 @@ class WindowsController {
         node.textContent = node.dataset.value = this._cmbExps.selectedOptions[0].dataset.value;
         this._lstExps.appendChild(node);
         this.CloseDialog(id);
+    }
+    OpenTest() {
     }
     ShowDialog(id) {
         this.StateInput.textContent = "Открытие диалога...";
