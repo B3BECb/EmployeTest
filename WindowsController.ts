@@ -20,6 +20,8 @@ class WindowsController
 	private _lstStuds: HTMLDivElement;
 	private _lstExps: HTMLDivElement;
 
+	private Applecant: ApplicantEntity;
+
 	constructor(factory: MongoContextFactory)
 	{
 		this.Factory    = factory;
@@ -227,7 +229,7 @@ class WindowsController
 		let fam = new RatedEntitieBase(option.textContent, Number.parseInt(option.dataset.rate));
 		age.Id = option.dataset.id;
 
-		let applicant = new ApplicantEntity(
+		this.Applecant = new ApplicantEntity(
 			this._txtFio.value,
 			age,
 			studies,
@@ -240,6 +242,10 @@ class WindowsController
 			0
 		);
 
+		let testPage = document.querySelector("#testDialog");
+
+		this.SetPage(testPage);
+
 		//let applicantModel = new this.Factory.ApplicantModel(applicant.ToDbEntry());
 		//let dbApplicant = await this.Factory.SaveAsync(applicantModel, ApplicantEntity.Represent);
 	}
@@ -249,7 +255,12 @@ class WindowsController
 							studs: CommentableEntitieBase[],
 							exps: CommentableEntitieBase[]): number
 	{
-		throw "Not implemented";
+		let values = [age.Rate,
+			fam.Rate,
+			...studs.map(x => x.RatedEntitie.Rate),
+			...exps.map(x => x.RatedEntitie.Rate)];
+
+		return Math.max.apply(null, values);
 	}
 
 	private ShowDialog(id: string)
