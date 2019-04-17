@@ -4,29 +4,37 @@ const mongoose = require('mongoose');
 const Types    = mongoose.Schema.Types;
 
 class CommentableEntitieBase
-	extends RatedEntitieBase
 {
+	public RatedEntitie: RatedEntitieBase;
 	public Comment: string;
 
-	constructor(value: string, rate: number, comment: string)
+	constructor(ratedEntitie: RatedEntitieBase, comment: string)
 	{
-		super(value, rate);
+		this.RatedEntitie = ratedEntitie;
 		this.Comment = comment;
 	}
 
-	public static GetSchemaInfo(): any
+	public static GetSchemaInfo(ref: string): any
 	{
-		let base: any = RatedEntitieBase.GetSchemaInfo();
-		base.Comment  = Types.String;
-
-		return base;
+		return {
+			RatedEntitie: { type: Types.ObjectId, ref: ref },
+			Comment: Types.String
+		};
 	}
 
 	public static Represent(entry: CommentableEntitieBase): CommentableEntitieBase
 	{
-		let base     = RatedEntitieBase.Represent(entry) as CommentableEntitieBase;
-		base.Comment = entry.Comment;
-		return base;
+		let ratedEntitie = RatedEntitieBase.Represent(entry.RatedEntitie) as RatedEntitieBase;
+
+		return new CommentableEntitieBase(ratedEntitie, entry.Comment);
+	}
+
+	public ToDbEntry(): any
+	{
+		return {
+			RatedEntitie: mongoose.Types.ObjectId(this.RatedEntitie.Id),
+			Comment: this.Comment,
+		}
 	}
 }
 

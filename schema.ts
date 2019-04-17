@@ -9,8 +9,8 @@ const mongoose = require('mongoose');
 export class MongoContextFactory
 {
 	public AgeModel: Model<any>;
-	public ApExpModel: Model<any>;
-	public ApStudModel: Model<any>;
+	// public ApExpModel: Model<any>;
+	// public ApStudModel: Model<any>;
 	public ExpModel: Model<any>;
 	public StudModel: Model<any>;
 	public FamModel: Model<any>;
@@ -52,11 +52,11 @@ export class MongoContextFactory
 		if(isConnected)
 		{
 			let ratedEntitiesSchema       = new mongoose.Schema(RatedEntitieBase.GetSchemaInfo());
-			let commendableEntitiesSchema = new mongoose.Schema(CommentableEntitieBase.GetSchemaInfo());
+			// let commendableEntitiesSchema = new mongoose.Schema(CommentableEntitieBase.GetSchemaInfo());
 
 			this.AgeModel     = mongoose.model("age", ratedEntitiesSchema);
-			this.ApExpModel   = mongoose.model("apExp", commendableEntitiesSchema);
-			this.ApStudModel  = mongoose.model("apStud", commendableEntitiesSchema);
+			// this.ApExpModel   = mongoose.model("apExp", commendableEntitiesSchema);
+			// this.ApStudModel  = mongoose.model("apStud", commendableEntitiesSchema);
 			this.ExpModel     = mongoose.model("exp", ratedEntitiesSchema);
 			this.StudModel    = mongoose.model("stud", ratedEntitiesSchema);
 			this.FamModel     = mongoose.model("fam", ratedEntitiesSchema);
@@ -87,6 +87,23 @@ export class MongoContextFactory
 				let represented: T[] = res.map(x => represent(x));
 
 				resolve(represented);
+			});
+		});
+	}
+
+	public async SaveAsync<T>(dbEntry: any, represent: Function): Promise<T>
+	{
+		return new Promise((resolve, reject) =>
+		{
+			dbEntry.save(function(err, dbEntry)
+			{
+				if(err)
+				{
+					console.error(err);
+					reject();
+				}
+
+				resolve(represent(dbEntry));
 			});
 		});
 	}

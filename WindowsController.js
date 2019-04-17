@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const RatedEntitieBase_1 = require("./entities/RatedEntitieBase");
+const ApplicantEntity_1 = require("./entities/ApplicantEntity");
+const CommentableEntitieBase_1 = require("./entities/CommentableEntitieBase");
 class WindowsController {
     constructor(factory) {
         this.Factory = factory;
@@ -116,7 +118,30 @@ class WindowsController {
         this._lstExps.appendChild(node);
         this.CloseDialog(id);
     }
-    OpenTest() {
+    async OpenTest() {
+        let studies = [...this._lstStuds
+                .children]
+            .map((x) => {
+            let stud = new RatedEntitieBase_1.RatedEntitieBase(x.textContent, Number.parseInt(x.dataset.rate));
+            stud.Id = x.dataset.id;
+            return new CommentableEntitieBase_1.CommentableEntitieBase(stud, x.dataset.comment);
+        });
+        let exps = [...this._lstExps
+                .children]
+            .map((x) => {
+            let stud = new RatedEntitieBase_1.RatedEntitieBase(x.textContent, Number.parseInt(x.dataset.rate));
+            stud.Id = x.dataset.id;
+            return new CommentableEntitieBase_1.CommentableEntitieBase(stud, x.dataset.comment);
+        });
+        let option = this._cmbAges.selectedOptions[0];
+        let age = new RatedEntitieBase_1.RatedEntitieBase(option.textContent, Number.parseInt(option.dataset.rate));
+        age.Id = option.dataset.id;
+        option = this._cmbFams.selectedOptions[0];
+        let fam = new RatedEntitieBase_1.RatedEntitieBase(option.textContent, Number.parseInt(option.dataset.rate));
+        age.Id = option.dataset.id;
+        let applicant = new ApplicantEntity_1.ApplicantEntity("a1", age, studies, exps, fam, this._txtComment.value, 14, 35, 46, 363);
+        let applicantModel = new this.Factory.ApplicantModel(applicant.ToDbEntry());
+        let dbApplicant = await this.Factory.SaveAsync(applicantModel, ApplicantEntity_1.ApplicantEntity.Represent);
     }
     ShowDialog(id) {
         this.StateInput.textContent = "Открытие диалога...";

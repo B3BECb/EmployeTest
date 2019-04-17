@@ -17,8 +17,8 @@ class ApplicantEntity extends TestSysEntitieBase_1.TestSysEntitieBase {
     }
     static GetSchemaInfo() {
         let base = TestSysEntitieBase_1.TestSysEntitieBase.GetSchemaInfo();
-        base.Studies = [CommentableEntitieBase_1.CommentableEntitieBase.GetSchemaInfo()];
-        base.Experiences = [CommentableEntitieBase_1.CommentableEntitieBase.GetSchemaInfo()];
+        base.Studies = [CommentableEntitieBase_1.CommentableEntitieBase.GetSchemaInfo("stud")];
+        base.Experiences = [CommentableEntitieBase_1.CommentableEntitieBase.GetSchemaInfo("exp")];
         base.Jobs = [{ type: Types.ObjectId, ref: "job" }];
         base.Employment = Types.String;
         base.Rate = Types.Number;
@@ -34,9 +34,11 @@ class ApplicantEntity extends TestSysEntitieBase_1.TestSysEntitieBase {
     }
     ToDbEntry() {
         let base = super.ToDbEntry();
-        base.Studies = this.Studies;
-        base.Experiences = this.Experiences;
-        base.Jobs = this.Jobs.map(x => mongoose.Types.ObjectId(x.Id));
+        base.Studies = this.Studies.map(x => x.ToDbEntry());
+        base.Experiences = this.Experiences.map(x => x.ToDbEntry());
+        base.Jobs = this.Jobs
+            ? this.Jobs.map(x => mongoose.Types.ObjectId(x.Id))
+            : [];
         base.Rate = this.Rate;
         return base;
     }

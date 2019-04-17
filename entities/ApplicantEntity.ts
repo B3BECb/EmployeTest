@@ -41,8 +41,8 @@ class ApplicantEntity
 	public static GetSchemaInfo(): any
 	{
 		let base: any    = TestSysEntitieBase.GetSchemaInfo();
-		base.Studies     = [CommentableEntitieBase.GetSchemaInfo()];
-		base.Experiences = [CommentableEntitieBase.GetSchemaInfo()];
+		base.Studies     = [CommentableEntitieBase.GetSchemaInfo("stud")];
+		base.Experiences = [CommentableEntitieBase.GetSchemaInfo("exp")];
 		base.Jobs        = [{ type: Types.ObjectId, ref: "job" }];
 		base.Employment  = Types.String;
 		base.Rate        = Types.Number;
@@ -63,9 +63,11 @@ class ApplicantEntity
 	public ToDbEntry(): any
 	{
 		let base         = super.ToDbEntry();
-		base.Studies     = this.Studies;
-		base.Experiences = this.Experiences;
-		base.Jobs        = this.Jobs.map(x => mongoose.Types.ObjectId(x.Id));
+		base.Studies     = this.Studies.map(x => x.ToDbEntry());
+		base.Experiences = this.Experiences.map(x => x.ToDbEntry());
+		base.Jobs        = this.Jobs
+						   ? this.Jobs.map(x => mongoose.Types.ObjectId(x.Id))
+						   : [];
 		base.Rate        = this.Rate;
 		return base;
 	}

@@ -1,5 +1,7 @@
 import { MongoContextFactory } from "./schema";
 import { RatedEntitieBase } from "./entities/RatedEntitieBase";
+import { ApplicantEntity } from "./entities/ApplicantEntity";
+import { CommentableEntitieBase } from "./entities/CommentableEntitieBase";
 
 class WindowsController
 {
@@ -193,9 +195,61 @@ class WindowsController
 		this.CloseDialog(id);
 	}
 
-	private OpenTest()
+	private async OpenTest()
 	{
+		let studies = [...this._lstStuds
+			.children]
+			.map(
+				(x: HTMLElement) =>
+				{
+					let stud = new RatedEntitieBase(x.textContent, Number.parseInt(x.dataset.rate));
+					stud.Id = x.dataset.id;
 
+					return new CommentableEntitieBase(stud, x.dataset.comment);
+				});
+
+		let exps = [...this._lstExps
+			.children]
+			.map(
+				(x: HTMLElement) =>
+				{
+					let stud = new RatedEntitieBase(x.textContent, Number.parseInt(x.dataset.rate));
+					stud.Id = x.dataset.id;
+
+					return new CommentableEntitieBase(stud, x.dataset.comment);
+				});
+
+		let option = this._cmbAges.selectedOptions[0];
+		let age = new RatedEntitieBase(option.textContent, Number.parseInt(option.dataset.rate));
+		age.Id = option.dataset.id;
+
+		option = this._cmbFams.selectedOptions[0];
+		let fam = new RatedEntitieBase(option.textContent, Number.parseInt(option.dataset.rate));
+		age.Id = option.dataset.id;
+
+		let applicant = new ApplicantEntity(
+			this._txtFio.value,
+			age,
+			studies,
+			exps,
+			fam,
+			this._txtComment.value,
+			this.CalcInitialRate(age, fam, studies, exps),
+			0,
+			0,
+			0
+		);
+
+		//let applicantModel = new this.Factory.ApplicantModel(applicant.ToDbEntry());
+		//let dbApplicant = await this.Factory.SaveAsync(applicantModel, ApplicantEntity.Represent);
+	}
+
+	private CalcInitialRate(age: RatedEntitieBase,
+							fam: RatedEntitieBase,
+							studs: CommentableEntitieBase[],
+							exps: CommentableEntitieBase[]): number
+	{
+		throw "Not implemented";
 	}
 
 	private ShowDialog(id: string)

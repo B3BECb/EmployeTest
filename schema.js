@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const RatedEntitieBase_1 = require("./entities/RatedEntitieBase");
-const CommentableEntitieBase_1 = require("./entities/CommentableEntitieBase");
 const JobEntitie_1 = require("./entities/JobEntitie");
 const ApplicantEntity_1 = require("./entities/ApplicantEntity");
 const mongoose = require('mongoose');
@@ -25,10 +24,10 @@ class MongoContextFactory {
         });
         if (isConnected) {
             let ratedEntitiesSchema = new mongoose.Schema(RatedEntitieBase_1.RatedEntitieBase.GetSchemaInfo());
-            let commendableEntitiesSchema = new mongoose.Schema(CommentableEntitieBase_1.CommentableEntitieBase.GetSchemaInfo());
+            // let commendableEntitiesSchema = new mongoose.Schema(CommentableEntitieBase.GetSchemaInfo());
             this.AgeModel = mongoose.model("age", ratedEntitiesSchema);
-            this.ApExpModel = mongoose.model("apExp", commendableEntitiesSchema);
-            this.ApStudModel = mongoose.model("apStud", commendableEntitiesSchema);
+            // this.ApExpModel   = mongoose.model("apExp", commendableEntitiesSchema);
+            // this.ApStudModel  = mongoose.model("apStud", commendableEntitiesSchema);
             this.ExpModel = mongoose.model("exp", ratedEntitiesSchema);
             this.StudModel = mongoose.model("stud", ratedEntitiesSchema);
             this.FamModel = mongoose.model("fam", ratedEntitiesSchema);
@@ -49,6 +48,17 @@ class MongoContextFactory {
                 }
                 let represented = res.map(x => represent(x));
                 resolve(represented);
+            });
+        });
+    }
+    async SaveAsync(dbEntry, represent) {
+        return new Promise((resolve, reject) => {
+            dbEntry.save(function (err, dbEntry) {
+                if (err) {
+                    console.error(err);
+                    reject();
+                }
+                resolve(represent(dbEntry));
             });
         });
     }
