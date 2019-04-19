@@ -242,7 +242,9 @@ class WindowsController
 			0
 		);
 
-		let testPage = document.querySelector("#testDialog");
+		let testPage = (document.querySelector("#testDialog") as HTMLTemplateElement)
+			.content
+			.cloneNode(true);
 
 		this.SetPage(testPage);
 

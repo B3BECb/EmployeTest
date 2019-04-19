@@ -140,7 +140,9 @@ class WindowsController {
         let fam = new RatedEntitieBase_1.RatedEntitieBase(option.textContent, Number.parseInt(option.dataset.rate));
         age.Id = option.dataset.id;
         this.Applecant = new ApplicantEntity_1.ApplicantEntity(this._txtFio.value, age, studies, exps, fam, this._txtComment.value, this.CalcInitialRate(age, fam, studies, exps), 0, 0, 0);
-        let testPage = document.querySelector("#testDialog");
+        let testPage = document.querySelector("#testDialog")
+            .content
+            .cloneNode(true);
         this.SetPage(testPage);
         //let applicantModel = new this.Factory.ApplicantModel(applicant.ToDbEntry());
         //let dbApplicant = await this.Factory.SaveAsync(applicantModel, ApplicantEntity.Represent);

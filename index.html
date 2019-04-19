@@ -115,6 +115,29 @@
 			height:   30px;
 			width:    70px;
 		}
+
+		.questions
+		{
+			display:        flex;
+			flex-direction: column;
+			padding:        8px;
+		}
+
+		.question
+		{
+			display: none;
+		}
+
+		.question.current
+		{
+			display: block;
+		}
+
+		.question .content
+		{
+			margin-bottom: 8px;
+		}
+
 	</style>
 </head>
 <body>
@@ -223,13 +246,72 @@
 	<button class = "btn next fixed">Далее</button>
 </template>
 <template id = "testDialog">
-	<div>
-
-	</div>
-	<div class="hidden">
-
-	</div>
-	<div class="hidden">
-
+	<div class = "questions">
+		<div class = "question current">
+			<div class = "content">
+				Описание
+			</div>
+			<div class = "answers">
+				<div>
+					<input type = "radio"
+						   name = "q1"
+						   value = "10"> Значение 1
+				</div>
+				<div>
+					<input type = "radio"
+						   name = "q1"
+						   value = "12"> Значение 2
+				</div>
+				<div>
+					<input type = "radio"
+						   name = "q1"
+						   value = "13"> Значение 3
+				</div>
+			</div>
+		</div>
+		<div class = "question">
+			<div class = "content">
+				Описание
+			</div>
+			<div class = "answers">
+				<div>
+					<input type = "radio"
+						   name = "q2"
+						   value = "10"> Значение 1
+				</div>
+				<div>
+					<input type = "radio"
+						   name = "q2"
+						   value = "12"> Значение 2
+				</div>
+				<div>
+					<input type = "radio"
+						   name = "q2"
+						   value = "13"> Значение 3
+				</div>
+			</div>
+		</div>
+		<div class = "question">
+			<div class = "content">
+				Описание
+			</div>
+			<div class = "answers">
+				<div>
+					<input type = "radio"
+						   name = "q3"
+						   value = "10"> Значение 1
+				</div>
+				<div>
+					<input type = "radio"
+						   name = "q3"
+						   value = "12"> Значение 2
+				</div>
+				<div>
+					<input type = "radio"
+						   name = "q3"
+						   value = "13"> Значение 3
+				</div>
+			</div>
+		</div>
 	</div>
 </template>
