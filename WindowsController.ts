@@ -247,9 +247,42 @@ class WindowsController
 			.cloneNode(true);
 
 		this.SetPage(testPage);
-
+		this.BindRadioButtons();
 		//let applicantModel = new this.Factory.ApplicantModel(applicant.ToDbEntry());
 		//let dbApplicant = await this.Factory.SaveAsync(applicantModel, ApplicantEntity.Represent);
+	}
+
+	private BindRadioButtons()
+	{
+		let qestions = document.querySelectorAll(".question");
+
+		qestions.forEach((q, index) =>
+		{
+			let radBtns = q.querySelectorAll("input[type='radio']");
+			let qType = (q as HTMLElement).dataset.type;
+
+			radBtns.forEach(rb =>
+			{
+				rb.addEventListener('click',
+					() =>
+					{
+						if(index != qestions.length - 1)
+						{
+							q.classList.remove('current');
+							qestions[index+1].classList.add('current');
+						}
+						else
+						{
+							this.ShowAllowedJobs();
+						}
+					})
+			});
+		});
+	}
+
+	private ShowAllowedJobs()
+	{
+
 	}
 
 	private CalcInitialRate(age: RatedEntitieBase,

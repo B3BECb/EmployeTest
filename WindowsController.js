@@ -144,8 +144,29 @@ class WindowsController {
             .content
             .cloneNode(true);
         this.SetPage(testPage);
+        this.BindRadioButtons();
         //let applicantModel = new this.Factory.ApplicantModel(applicant.ToDbEntry());
         //let dbApplicant = await this.Factory.SaveAsync(applicantModel, ApplicantEntity.Represent);
+    }
+    BindRadioButtons() {
+        let qestions = document.querySelectorAll(".question");
+        qestions.forEach((q, index) => {
+            let radBtns = q.querySelectorAll("input[type='radio']");
+            let qType = q.dataset.type;
+            radBtns.forEach(rb => {
+                rb.addEventListener('click', () => {
+                    if (index != qestions.length - 1) {
+                        q.classList.remove('current');
+                        qestions[index + 1].classList.add('current');
+                    }
+                    else {
+                        this.ShowAllowedJobs();
+                    }
+                });
+            });
+        });
+    }
+    ShowAllowedJobs() {
     }
     CalcInitialRate(age, fam, studs, exps) {
         let values = [age.Rate,
