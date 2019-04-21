@@ -29,6 +29,11 @@ class CommentableEntitieBase
 		return new CommentableEntitieBase(ratedEntitie, entry.Comment);
 	}
 
+	public static IncludeDependencies()
+	{
+		return [{ path: 'RatedEntitie' }];
+	}
+
 	public ToDbEntry(): any
 	{
 		return {

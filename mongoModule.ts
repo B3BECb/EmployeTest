@@ -244,7 +244,7 @@ class DbDataImpl
 			this._pays[0],
 			"Охрана помещений",
 			"Рабочая неделя",
-			0);
+			10);
 		let entry   = new jobModel(job.ToDbEntry());
 		let dbEntry = await this.Save(entry, RatedEntitieBase.Represent);
 		this._jobs.push(dbEntry as JobEntitie);
@@ -257,7 +257,7 @@ class DbDataImpl
 			this._pays[1],
 			"Системный администратор",
 			"Рабочая неделя",
-			0);
+			30);
 		entry   = new jobModel(job.ToDbEntry());
 		dbEntry = await this.Save(entry, RatedEntitieBase.Represent);
 		this._jobs.push(dbEntry as JobEntitie);
@@ -270,7 +270,7 @@ class DbDataImpl
 			this._pays[2],
 			"Системный администратор",
 			"Рабочая неделя",
-			0);
+			35);
 		entry   = new jobModel(job.ToDbEntry());
 		dbEntry = await this.Save(entry, RatedEntitieBase.Represent);
 		this._jobs.push(dbEntry as JobEntitie);
@@ -283,7 +283,7 @@ class DbDataImpl
 			this._pays[3],
 			"Менеджер направления разработки ПО",
 			"Рабочая неделя",
-			0);
+			40);
 		entry   = new jobModel(job.ToDbEntry());
 		dbEntry = await this.Save(entry, RatedEntitieBase.Represent);
 		this._jobs.push(dbEntry as JobEntitie);

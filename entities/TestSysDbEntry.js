@@ -4,6 +4,9 @@ class TestSysDbEntry {
     static Represent(entry) {
         throw "NotImplemented";
     }
+    static IncludeDependencies() {
+        return [];
+    }
 }
 exports.TestSysDbEntry = TestSysDbEntry;
 //# sourceMappingURL=TestSysDbEntry.js.map

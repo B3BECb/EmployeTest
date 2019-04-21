@@ -32,6 +32,9 @@ class ApplicantEntity extends TestSysEntitieBase_1.TestSysEntitieBase {
         base.Rate = entry.Rate;
         return base;
     }
+    static IncludeDependencies() {
+        return [...TestSysEntitieBase_1.TestSysEntitieBase.IncludeDependencies(), { path: 'RatedEntitie' }];
+    }
     ToDbEntry() {
         let base = super.ToDbEntry();
         base.Studies = this.Studies.map(x => x.ToDbEntry());

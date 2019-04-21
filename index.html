@@ -138,6 +138,22 @@
 			margin-bottom: 8px;
 		}
 
+		.job
+		{
+			margin-bottom: 8px;
+			background:    azure;
+			padding:       8px;
+		}
+
+		.fin
+		{
+			display:         flex;
+			padding:         8px;
+			justify-content: center;
+			align-items:     center;
+			flex-direction:  column;
+			height:          calc(100vh - 16px);
+		}
 	</style>
 </head>
 <body>
@@ -251,7 +267,7 @@
 		<!-- не конфликтный работник -->
 
 		<div class = "question current"
-			 data-type = "bysnes"
+			 data-type = "bisnes"
 			 data-rating = "25">
 			<div class = "content">
 				Представьте, что в общественном транспорте или на рынке начинается спор. Вы:
@@ -275,7 +291,7 @@
 			</div>
 		</div>
 		<div class = "question"
-			 data-type = "bysnes"
+			 data-type = "bisnes"
 			 data-rating = "25">
 			<div class = "content">
 				Когда вы присутствуете на каком-либо собрании, вы:
@@ -302,7 +318,7 @@
 		<!-- хорошый работник -->
 
 		<div class = "question"
-			 data-type = "bysnes"
+			 data-type = "bisnes"
 			 data-rating = "25">
 			<div class = "content">
 				Ваш начальник вызывает к себе всех сотрудников и сообщает пренеприятное известие: надо поработать
@@ -335,7 +351,7 @@
 			</div>
 		</div>
 		<div class = "question"
-			 data-type = "bysnes"
+			 data-type = "bisnes"
 			 data-rating = "25">
 			<div class = "content">
 				Вашу работу критикуют, вы:
@@ -606,6 +622,35 @@
 						   value = "0"> список значений атрибута для всех однотипных объектов
 				</div>
 			</div>
+		</div>
+	</div>
+</template>
+<template id = "allowedJobsDialog">
+	<div class = "jobs">
+
+	</div>
+	<button class = "btn next fixed">Далее</button>
+</template>
+<template id = "job">
+	<div class = "job">
+		<div style = "margin-bottom: 8px">
+			<input type = "checkbox"
+				   name = "job">
+			<span data-id = "Name"
+				  style = "font-weight: bold"></span>
+		</div>
+		<div data-id = "Payment">З/П:</div>
+		<div data-id = "Employment">Занятость:</div>
+		<div data-id = "Comment">Особенности:</div>
+	</div>
+</template>
+<template id = "noChance">
+	<div class = "fin">
+		<div>
+			Благодарим Вас за прохождение собеседования.
+		</div>
+		<div>
+			Наш специалист по кадрам в скором времени Вам перезвонит.
 		</div>
 	</div>
 </template>

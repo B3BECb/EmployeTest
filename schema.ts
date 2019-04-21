@@ -1,6 +1,5 @@
 import { Model } from "mongoose";
 import { RatedEntitieBase } from "./entities/RatedEntitieBase";
-import { CommentableEntitieBase } from "./entities/CommentableEntitieBase";
 import { JobEntitie } from "./entities/JobEntitie";
 import { ApplicantEntity } from "./entities/ApplicantEntity";
 
@@ -9,8 +8,6 @@ const mongoose = require('mongoose');
 export class MongoContextFactory
 {
 	public AgeModel: Model<any>;
-	// public ApExpModel: Model<any>;
-	// public ApStudModel: Model<any>;
 	public ExpModel: Model<any>;
 	public StudModel: Model<any>;
 	public FamModel: Model<any>;
@@ -51,12 +48,9 @@ export class MongoContextFactory
 
 		if(isConnected)
 		{
-			let ratedEntitiesSchema       = new mongoose.Schema(RatedEntitieBase.GetSchemaInfo());
-			// let commendableEntitiesSchema = new mongoose.Schema(CommentableEntitieBase.GetSchemaInfo());
+			let ratedEntitiesSchema = new mongoose.Schema(RatedEntitieBase.GetSchemaInfo());
 
 			this.AgeModel     = mongoose.model("age", ratedEntitiesSchema);
-			// this.ApExpModel   = mongoose.model("apExp", commendableEntitiesSchema);
-			// this.ApStudModel  = mongoose.model("apStud", commendableEntitiesSchema);
 			this.ExpModel     = mongoose.model("exp", ratedEntitiesSchema);
 			this.StudModel    = mongoose.model("stud", ratedEntitiesSchema);
 			this.FamModel     = mongoose.model("fam", ratedEntitiesSchema);
@@ -72,22 +66,26 @@ export class MongoContextFactory
 		return isConnected;
 	}
 
-	public async SelectAsync<T>(model: Model<any>, represent: Function, filter: object): Promise<T[]>
+	public async SelectAsync<T>(model: Model<any>, object: T | any, filter: object): Promise<T[]>
 	{
 		return await new Promise((resolve, reject) =>
 		{
-			model.find(filter, (err, res) =>
-			{
-				if(err)
-				{
-					console.error(err);
-					reject();
-				}
+			let dependencies = object.IncludeDependencies();
 
-				let represented: T[] = res.map(x => represent(x));
+			model.find(filter)
+				 .populate(dependencies)
+				 .exec((err, res) =>
+				 {
+					 if(err)
+					 {
+						 console.error(err);
+						 reject();
+					 }
 
-				resolve(represented);
-			});
+					 let represented: T[] = res.map(x => object.Represent(x));
+
+					 resolve(represented);
+				 });
 		});
 	}
 

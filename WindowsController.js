@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const RatedEntitieBase_1 = require("./entities/RatedEntitieBase");
 const ApplicantEntity_1 = require("./entities/ApplicantEntity");
 const CommentableEntitieBase_1 = require("./entities/CommentableEntitieBase");
+const JobEntitie_1 = require("./entities/JobEntitie");
 class WindowsController {
     constructor(factory) {
         this.Factory = factory;
@@ -58,7 +59,7 @@ class WindowsController {
     }
     async FillInputs() {
         this.StateInput.textContent = "Инициализация поля возрастов...";
-        let ages = await this.Factory.SelectAsync(this.Factory.AgeModel, RatedEntitieBase_1.RatedEntitieBase.Represent, {});
+        let ages = await this.Factory.SelectAsync(this.Factory.AgeModel, RatedEntitieBase_1.RatedEntitieBase, {});
         ages.forEach(x => {
             let element = document.createElement('option');
             element.dataset.id = x.Id;
@@ -68,7 +69,7 @@ class WindowsController {
             this._cmbAges.add(element);
         });
         this.StateInput.textContent = "Инициализация поля семейного положения...";
-        let fams = await this.Factory.SelectAsync(this.Factory.FamModel, RatedEntitieBase_1.RatedEntitieBase.Represent, {});
+        let fams = await this.Factory.SelectAsync(this.Factory.FamModel, RatedEntitieBase_1.RatedEntitieBase, {});
         fams.forEach(x => {
             let element = document.createElement('option');
             element.dataset.id = x.Id;
@@ -78,7 +79,7 @@ class WindowsController {
             this._cmbFams.add(element);
         });
         this.StateInput.textContent = "Инициализация поля типов образования...";
-        let studs = await this.Factory.SelectAsync(this.Factory.StudModel, RatedEntitieBase_1.RatedEntitieBase.Represent, {});
+        let studs = await this.Factory.SelectAsync(this.Factory.StudModel, RatedEntitieBase_1.RatedEntitieBase, {});
         studs.forEach(x => {
             let element = document.createElement('option');
             element.dataset.id = x.Id;
@@ -88,7 +89,7 @@ class WindowsController {
             this._cmbStuds.add(element);
         });
         this.StateInput.textContent = "Инициализация поля типов опыта...";
-        let exps = await this.Factory.SelectAsync(this.Factory.ExpModel, RatedEntitieBase_1.RatedEntitieBase.Represent, {});
+        let exps = await this.Factory.SelectAsync(this.Factory.ExpModel, RatedEntitieBase_1.RatedEntitieBase, {});
         exps.forEach(x => {
             let element = document.createElement('option');
             element.dataset.id = x.Id;
@@ -119,6 +120,7 @@ class WindowsController {
         this.CloseDialog(id);
     }
     async OpenTest() {
+        this.StateInput.textContent = "Сохранение результатов анкетирования...";
         let studies = [...this._lstStuds
                 .children]
             .map((x) => {
@@ -139,34 +141,135 @@ class WindowsController {
         option = this._cmbFams.selectedOptions[0];
         let fam = new RatedEntitieBase_1.RatedEntitieBase(option.textContent, Number.parseInt(option.dataset.rate));
         age.Id = option.dataset.id;
-        this.Applecant = new ApplicantEntity_1.ApplicantEntity(this._txtFio.value, age, studies, exps, fam, this._txtComment.value, this.CalcInitialRate(age, fam, studies, exps), 0, 0, 0);
+        this.Applicant = new ApplicantEntity_1.ApplicantEntity(this._txtFio.value, age, studies, exps, fam, this._txtComment.value, this.CalcInitialRate(age, fam, studies, exps), 0, 0, 0);
+        this.StateInput.textContent = "Запуск тестирования...";
         let testPage = document.querySelector("#testDialog")
             .content
             .cloneNode(true);
         this.SetPage(testPage);
         this.BindRadioButtons();
-        //let applicantModel = new this.Factory.ApplicantModel(applicant.ToDbEntry());
-        //let dbApplicant = await this.Factory.SaveAsync(applicantModel, ApplicantEntity.Represent);
+        this.StateInput.textContent = "Готово";
     }
     BindRadioButtons() {
         let qestions = document.querySelectorAll(".question");
+        let isFetchingStarted;
         qestions.forEach((q, index) => {
             let radBtns = q.querySelectorAll("input[type='radio']");
             let qType = q.dataset.type;
-            radBtns.forEach(rb => {
+            let qConfidence = Number.parseInt(q.dataset.rating);
+            radBtns.forEach((rb) => {
+                let answConfidence = Number.parseInt(rb.value);
                 rb.addEventListener('click', () => {
+                    switch (qType) {
+                        case "bisnes":
+                            {
+                                let conditionRate = this.CalcAndOperation(answConfidence, qConfidence);
+                                this.Applicant.BisnesRate =
+                                    this.CalcOrOperation(this.Applicant.BisnesRate, conditionRate);
+                                break;
+                            }
+                        case "psyco":
+                            {
+                                let conditionRate = this.CalcAndOperation(answConfidence, qConfidence);
+                                this.Applicant.PsycoRate =
+                                    this.CalcOrOperation(this.Applicant.PsycoRate, conditionRate);
+                                break;
+                            }
+                        case "prof":
+                            {
+                                let conditionRate = this.CalcAndOperation(answConfidence, qConfidence);
+                                this.Applicant.ProfRate =
+                                    this.CalcOrOperation(this.Applicant.ProfRate, conditionRate);
+                                break;
+                            }
+                    }
                     if (index != qestions.length - 1) {
                         q.classList.remove('current');
                         qestions[index + 1].classList.add('current');
                     }
                     else {
-                        this.ShowAllowedJobs();
+                        if (!isFetchingStarted) {
+                            isFetchingStarted = true;
+                            this.Applicant.Rate =
+                                Math.min(this.Applicant.Rate, this.Applicant.PsycoRate, this.Applicant.BisnesRate, this.Applicant.ProfRate);
+                            this.ShowAllowedJobs();
+                        }
                     }
                 });
             });
         });
     }
-    ShowAllowedJobs() {
+    async ShowAllowedJobs() {
+        this.StateInput.textContent = "Поиск вакансий...";
+        let jobs = await this.Factory.SelectAsync(this.Factory.JobModel, JobEntitie_1.JobEntitie, {});
+        this.StateInput.textContent = "Поиск подходящих вакансий...";
+        let calcJobs = jobs.map(x => {
+            let rate = Math.max(x.Payment.Rate, x.MinRate, x.Experience.Rate, x.Studie.Rate, x.Family.Rate, x.Age.Rate);
+            return {
+                Id: x.Id,
+                Name: x.Name,
+                Payment: x.Payment.Value,
+                Employment: x.Employment,
+                Comment: x.Comment,
+                Rate: rate,
+            };
+        });
+        let allowedJobs = calcJobs.filter(x => x.Rate <= this.Applicant.Rate);
+        let showFinal = () => {
+            let jobsPage = document.querySelector("#noChance")
+                .content
+                .cloneNode(true);
+            this.SetPage(jobsPage);
+        };
+        if (!allowedJobs.length) {
+            showFinal();
+        }
+        let jobsPage = document.querySelector("#allowedJobsDialog")
+            .content
+            .cloneNode(true);
+        this.SetPage(jobsPage);
+        let jobTemplate = document.querySelector("#job")
+            .content;
+        let jobsContainer = document.querySelector(".jobs");
+        allowedJobs.forEach(x => {
+            let job = jobTemplate.cloneNode(true);
+            job.querySelector('input').value = x.Id;
+            job.querySelector('[data-id="Name"]').textContent += x.Name;
+            job.querySelector('[data-id="Payment"]').textContent += x.Payment;
+            job.querySelector('[data-id="Employment"]').textContent += x.Employment;
+            job.querySelector('[data-id="Comment"]').textContent += x.Comment;
+            jobsContainer.appendChild(job);
+        });
+        document.querySelector(".btn.next.fixed").addEventListener('click', () => {
+            let ids = [...jobsContainer.querySelectorAll('input')]
+                .filter(x => x.checked)
+                .map(x => x.value);
+            if (ids.length) {
+                this.PushApplicant(ids);
+            }
+            showFinal();
+        });
+        this.StateInput.textContent = "Готово";
+    }
+    async PushApplicant(jobsIds) {
+        let applicant = this.Applicant;
+        applicant.Jobs = jobsIds.map(x => {
+            return {
+                Id: x,
+            };
+        });
+        //TODO: исправить баг в represent при сохраннении соискателя. Поля не совпадают
+        //let applicantModel = new this.Factory.ApplicantModel(applicant.ToDbEntry());
+        //let dbApplicant = await this.Factory.SaveAsync(applicantModel, ApplicantEntity.Represent);
+    }
+    CalcAndOperation(cfA, cfB) {
+        if (cfA == 100) {
+            return cfB;
+        }
+        return cfA * cfB / 100;
+    }
+    CalcOrOperation(cfA, cfB) {
+        return cfA + cfB - cfA * cfB / 100;
     }
     CalcInitialRate(age, fam, studs, exps) {
         let values = [age.Rate,

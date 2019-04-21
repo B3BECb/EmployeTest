@@ -39,11 +39,16 @@ class TestSysEntitieBase
 	public static Represent(entry: TestSysEntitieBase): TestSysEntitieBase
 	{
 		let represented = new TestSysEntitieBase(entry.Name,
-			entry.Age,
-			entry.Family,
+			RatedEntitieBase.Represent(entry.Age),
+			RatedEntitieBase.Represent(entry.Family),
 			entry.Comment);
 		represented.Id  = (entry as any)._id.toString();
 		return represented;
+	}
+
+	public static IncludeDependencies()
+	{
+		return [{ path: 'Age' }, { path: 'Family' }];
 	}
 
 	public ToDbEntry(): any

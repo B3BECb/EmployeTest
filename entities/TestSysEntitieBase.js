@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const RatedEntitieBase_1 = require("./RatedEntitieBase");
 const TestSysDbEntry_1 = require("./TestSysDbEntry");
 const mongoose = require('mongoose');
 const Types = mongoose.Schema.Types;
@@ -20,9 +21,12 @@ class TestSysEntitieBase extends TestSysDbEntry_1.TestSysDbEntry {
         };
     }
     static Represent(entry) {
-        let represented = new TestSysEntitieBase(entry.Name, entry.Age, entry.Family, entry.Comment);
+        let represented = new TestSysEntitieBase(entry.Name, RatedEntitieBase_1.RatedEntitieBase.Represent(entry.Age), RatedEntitieBase_1.RatedEntitieBase.Represent(entry.Family), entry.Comment);
         represented.Id = entry._id.toString();
         return represented;
+    }
+    static IncludeDependencies() {
+        return [{ path: 'Age' }, { path: 'Family' }];
     }
     ToDbEntry() {
         return {

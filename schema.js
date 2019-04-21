@@ -24,10 +24,7 @@ class MongoContextFactory {
         });
         if (isConnected) {
             let ratedEntitiesSchema = new mongoose.Schema(RatedEntitieBase_1.RatedEntitieBase.GetSchemaInfo());
-            // let commendableEntitiesSchema = new mongoose.Schema(CommentableEntitieBase.GetSchemaInfo());
             this.AgeModel = mongoose.model("age", ratedEntitiesSchema);
-            // this.ApExpModel   = mongoose.model("apExp", commendableEntitiesSchema);
-            // this.ApStudModel  = mongoose.model("apStud", commendableEntitiesSchema);
             this.ExpModel = mongoose.model("exp", ratedEntitiesSchema);
             this.StudModel = mongoose.model("stud", ratedEntitiesSchema);
             this.FamModel = mongoose.model("fam", ratedEntitiesSchema);
@@ -39,14 +36,17 @@ class MongoContextFactory {
         }
         return isConnected;
     }
-    async SelectAsync(model, represent, filter) {
+    async SelectAsync(model, object, filter) {
         return await new Promise((resolve, reject) => {
-            model.find(filter, (err, res) => {
+            let dependencies = object.IncludeDependencies();
+            model.find(filter)
+                .populate(dependencies)
+                .exec((err, res) => {
                 if (err) {
                     console.error(err);
                     reject();
                 }
-                let represented = res.map(x => represent(x));
+                let represented = res.map(x => object.Represent(x));
                 resolve(represented);
             });
         });

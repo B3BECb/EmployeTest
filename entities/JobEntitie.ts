@@ -47,12 +47,18 @@ class JobEntitie
 	public static Represent(entry: JobEntitie): JobEntitie
 	{
 		let base        = TestSysEntitieBase.Represent(entry) as JobEntitie;
-		base.Studie     = entry.Studie;
-		base.Experience = entry.Experience;
-		base.Payment    = entry.Payment;
+		base.Studie     = RatedEntitieBase.Represent(entry.Studie);
+		base.Experience = RatedEntitieBase.Represent(entry.Experience);
+		base.Payment    = RatedEntitieBase.Represent(entry.Payment);
 		base.Employment = entry.Employment;
 		base.MinRate    = entry.MinRate;
 		return base;
+	}
+
+	public static IncludeDependencies()
+	{
+		return [...TestSysEntitieBase
+			.IncludeDependencies(), {path: 'Studie'}, {path: 'Experience'}, {path: 'Payment'}];
 	}
 
 	public ToDbEntry(): any

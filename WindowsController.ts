@@ -2,6 +2,7 @@ import { MongoContextFactory } from "./schema";
 import { RatedEntitieBase } from "./entities/RatedEntitieBase";
 import { ApplicantEntity } from "./entities/ApplicantEntity";
 import { CommentableEntitieBase } from "./entities/CommentableEntitieBase";
+import { JobEntitie } from "./entities/JobEntitie";
 
 class WindowsController
 {
@@ -20,7 +21,7 @@ class WindowsController
 	private _lstStuds: HTMLDivElement;
 	private _lstExps: HTMLDivElement;
 
-	private Applecant: ApplicantEntity;
+	private Applicant: ApplicantEntity;
 
 	constructor(factory: MongoContextFactory)
 	{
@@ -105,7 +106,7 @@ class WindowsController
 		this.StateInput.textContent = "Инициализация поля возрастов...";
 		let ages                    = await this.Factory.SelectAsync<RatedEntitieBase>(
 			this.Factory.AgeModel,
-			RatedEntitieBase.Represent,
+			RatedEntitieBase,
 			{});
 
 		ages.forEach(x =>
@@ -122,7 +123,7 @@ class WindowsController
 		this.StateInput.textContent = "Инициализация поля семейного положения...";
 		let fams                    = await this.Factory.SelectAsync<RatedEntitieBase>(
 			this.Factory.FamModel,
-			RatedEntitieBase.Represent,
+			RatedEntitieBase,
 			{});
 
 		fams.forEach(x =>
@@ -139,7 +140,7 @@ class WindowsController
 		this.StateInput.textContent = "Инициализация поля типов образования...";
 		let studs                   = await this.Factory.SelectAsync<RatedEntitieBase>(
 			this.Factory.StudModel,
-			RatedEntitieBase.Represent,
+			RatedEntitieBase,
 			{});
 
 		studs.forEach(x =>
@@ -156,7 +157,7 @@ class WindowsController
 		this.StateInput.textContent = "Инициализация поля типов опыта...";
 		let exps                    = await this.Factory.SelectAsync<RatedEntitieBase>(
 			this.Factory.ExpModel,
-			RatedEntitieBase.Represent,
+			RatedEntitieBase,
 			{});
 
 		exps.forEach(x =>
@@ -199,13 +200,14 @@ class WindowsController
 
 	private async OpenTest()
 	{
-		let studies = [...this._lstStuds
+		this.StateInput.textContent = "Сохранение результатов анкетирования...";
+		let studies                 = [...this._lstStuds
 			.children]
 			.map(
 				(x: HTMLElement) =>
 				{
 					let stud = new RatedEntitieBase(x.textContent, Number.parseInt(x.dataset.rate));
-					stud.Id = x.dataset.id;
+					stud.Id  = x.dataset.id;
 
 					return new CommentableEntitieBase(stud, x.dataset.comment);
 				});
@@ -216,20 +218,20 @@ class WindowsController
 				(x: HTMLElement) =>
 				{
 					let stud = new RatedEntitieBase(x.textContent, Number.parseInt(x.dataset.rate));
-					stud.Id = x.dataset.id;
+					stud.Id  = x.dataset.id;
 
 					return new CommentableEntitieBase(stud, x.dataset.comment);
 				});
 
 		let option = this._cmbAges.selectedOptions[0];
-		let age = new RatedEntitieBase(option.textContent, Number.parseInt(option.dataset.rate));
-		age.Id = option.dataset.id;
+		let age    = new RatedEntitieBase(option.textContent, Number.parseInt(option.dataset.rate));
+		age.Id     = option.dataset.id;
 
-		option = this._cmbFams.selectedOptions[0];
+		option  = this._cmbFams.selectedOptions[0];
 		let fam = new RatedEntitieBase(option.textContent, Number.parseInt(option.dataset.rate));
-		age.Id = option.dataset.id;
+		age.Id  = option.dataset.id;
 
-		this.Applecant = new ApplicantEntity(
+		this.Applicant = new ApplicantEntity(
 			this._txtFio.value,
 			age,
 			studies,
@@ -239,50 +241,188 @@ class WindowsController
 			this.CalcInitialRate(age, fam, studies, exps),
 			0,
 			0,
-			0
+			0,
 		);
 
-		let testPage = (document.querySelector("#testDialog") as HTMLTemplateElement)
+		this.StateInput.textContent = "Запуск тестирования...";
+		let testPage                = (document.querySelector("#testDialog") as HTMLTemplateElement)
 			.content
 			.cloneNode(true);
 
 		this.SetPage(testPage);
 		this.BindRadioButtons();
-		//let applicantModel = new this.Factory.ApplicantModel(applicant.ToDbEntry());
-		//let dbApplicant = await this.Factory.SaveAsync(applicantModel, ApplicantEntity.Represent);
+		this.StateInput.textContent = "Готово";
 	}
 
 	private BindRadioButtons()
 	{
 		let qestions = document.querySelectorAll(".question");
+		let isFetchingStarted: boolean;
 
-		qestions.forEach((q, index) =>
+		qestions.forEach((q: HTMLElement, index) =>
 		{
-			let radBtns = q.querySelectorAll("input[type='radio']");
-			let qType = (q as HTMLElement).dataset.type;
+			let radBtns     = q.querySelectorAll("input[type='radio']");
+			let qType       = q.dataset.type;
+			let qConfidence = Number.parseInt(q.dataset.rating);
 
-			radBtns.forEach(rb =>
+			radBtns.forEach((rb: HTMLInputElement) =>
 			{
+				let answConfidence = Number.parseInt(rb.value);
+
 				rb.addEventListener('click',
 					() =>
 					{
+						switch(qType)
+						{
+							case "bisnes":
+							{
+								let conditionRate         = this.CalcAndOperation(answConfidence, qConfidence);
+								this.Applicant.BisnesRate =
+									this.CalcOrOperation(this.Applicant.BisnesRate, conditionRate);
+								break;
+							}
+							case "psyco":
+							{
+								let conditionRate        = this.CalcAndOperation(answConfidence, qConfidence);
+								this.Applicant.PsycoRate =
+									this.CalcOrOperation(this.Applicant.PsycoRate, conditionRate);
+								break;
+							}
+							case "prof":
+							{
+								let conditionRate       = this.CalcAndOperation(answConfidence, qConfidence);
+								this.Applicant.ProfRate =
+									this.CalcOrOperation(this.Applicant.ProfRate, conditionRate);
+								break;
+							}
+						}
+
 						if(index != qestions.length - 1)
 						{
 							q.classList.remove('current');
-							qestions[index+1].classList.add('current');
+							qestions[index + 1].classList.add('current');
 						}
 						else
 						{
-							this.ShowAllowedJobs();
+							if(!isFetchingStarted)
+							{
+								isFetchingStarted = true;
+
+								this.Applicant.Rate =
+									Math.min(this.Applicant.Rate, this.Applicant.PsycoRate, this.Applicant.BisnesRate,
+										this.Applicant.ProfRate);
+
+								this.ShowAllowedJobs();
+							}
 						}
-					})
+					});
 			});
 		});
 	}
 
-	private ShowAllowedJobs()
+	private async ShowAllowedJobs()
 	{
+		this.StateInput.textContent = "Поиск вакансий...";
+		let jobs                    = await this.Factory.SelectAsync<JobEntitie>(this.Factory.JobModel, JobEntitie, {});
 
+		this.StateInput.textContent = "Поиск подходящих вакансий...";
+		let calcJobs                = jobs.map(x =>
+		{
+			let rate = Math.max(x.Payment.Rate, x.MinRate, x.Experience.Rate, x.Studie.Rate, x.Family.Rate, x.Age.Rate);
+			return {
+				Id:         x.Id,
+				Name:       x.Name,
+				Payment:    x.Payment.Value,
+				Employment: x.Employment,
+				Comment:    x.Comment,
+				Rate:       rate,
+			};
+		});
+
+		let allowedJobs = calcJobs.filter(x => x.Rate <= this.Applicant.Rate);
+
+		let showFinal = () =>
+		{
+			let jobsPage = (document.querySelector("#noChance") as HTMLTemplateElement)
+				.content
+				.cloneNode(true);
+
+			this.SetPage(jobsPage);
+		};
+
+		if(!allowedJobs.length)
+		{
+			showFinal();
+		}
+
+		let jobsPage = (document.querySelector("#allowedJobsDialog") as HTMLTemplateElement)
+			.content
+			.cloneNode(true);
+		this.SetPage(jobsPage);
+
+		let jobTemplate   = (document.querySelector("#job") as HTMLTemplateElement)
+			.content;
+		let jobsContainer = document.querySelector(".jobs");
+
+		allowedJobs.forEach(x =>
+		{
+			let job = jobTemplate.cloneNode(true) as HTMLElement;
+
+			job.querySelector('input').value = x.Id;
+			job.querySelector('[data-id="Name"]').textContent += x.Name;
+			job.querySelector('[data-id="Payment"]').textContent += x.Payment;
+			job.querySelector('[data-id="Employment"]').textContent += x.Employment;
+			job.querySelector('[data-id="Comment"]').textContent += x.Comment;
+
+			jobsContainer.appendChild(job);
+		});
+
+		document.querySelector(".btn.next.fixed").addEventListener('click', () =>
+		{
+			let ids = [...jobsContainer.querySelectorAll('input')]
+				.filter(x => x.checked)
+				.map(x => x.value);
+
+			if(ids.length)
+			{
+				this.PushApplicant(ids);
+			}
+
+			showFinal();
+		});
+
+		this.StateInput.textContent = "Готово";
+	}
+
+	private async PushApplicant(jobsIds: string[])
+	{
+		let applicant = this.Applicant;
+		applicant.Jobs = jobsIds.map(x =>
+		{
+			return {
+				Id: x,
+			};
+		}) as JobEntitie[];
+
+		//TODO: исправить баг в represent при сохраннении соискателя. Поля не совпадают
+
+		//let applicantModel = new this.Factory.ApplicantModel(applicant.ToDbEntry());
+		//let dbApplicant = await this.Factory.SaveAsync(applicantModel, ApplicantEntity.Represent);
+	}
+
+	private CalcAndOperation(cfA: number, cfB: number): number
+	{
+		if(cfA == 100)
+		{
+			return cfB;
+		}
+
+		return cfA * cfB / 100;
+	}
+
+	private CalcOrOperation(cfA: number, cfB: number): number
+	{
+		return cfA + cfB - cfA * cfB / 100;
 	}
 
 	private CalcInitialRate(age: RatedEntitieBase,

@@ -18,6 +18,9 @@ class CommentableEntitieBase {
         let ratedEntitie = RatedEntitieBase_1.RatedEntitieBase.Represent(entry.RatedEntitie);
         return new CommentableEntitieBase(ratedEntitie, entry.Comment);
     }
+    static IncludeDependencies() {
+        return [{ path: 'RatedEntitie' }];
+    }
     ToDbEntry() {
         return {
             RatedEntitie: mongoose.Types.ObjectId(this.RatedEntitie.Id),

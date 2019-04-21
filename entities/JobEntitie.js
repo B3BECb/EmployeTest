@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const TestSysEntitieBase_1 = require("./TestSysEntitieBase");
+const RatedEntitieBase_1 = require("./RatedEntitieBase");
 const mongoose = require('mongoose');
 const Types = mongoose.Schema.Types;
 class JobEntitie extends TestSysEntitieBase_1.TestSysEntitieBase {
@@ -23,12 +24,16 @@ class JobEntitie extends TestSysEntitieBase_1.TestSysEntitieBase {
     }
     static Represent(entry) {
         let base = TestSysEntitieBase_1.TestSysEntitieBase.Represent(entry);
-        base.Studie = entry.Studie;
-        base.Experience = entry.Experience;
-        base.Payment = entry.Payment;
+        base.Studie = RatedEntitieBase_1.RatedEntitieBase.Represent(entry.Studie);
+        base.Experience = RatedEntitieBase_1.RatedEntitieBase.Represent(entry.Experience);
+        base.Payment = RatedEntitieBase_1.RatedEntitieBase.Represent(entry.Payment);
         base.Employment = entry.Employment;
         base.MinRate = entry.MinRate;
         return base;
+    }
+    static IncludeDependencies() {
+        return [...TestSysEntitieBase_1.TestSysEntitieBase
+                .IncludeDependencies(), { path: 'Studie' }, { path: 'Experience' }, { path: 'Payment' }];
     }
     ToDbEntry() {
         let base = super.ToDbEntry();

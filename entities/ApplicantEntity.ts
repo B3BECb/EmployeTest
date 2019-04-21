@@ -60,6 +60,11 @@ class ApplicantEntity
 		return base;
 	}
 
+	public static IncludeDependencies()
+	{
+		return [...TestSysEntitieBase.IncludeDependencies(), { path: 'RatedEntitie' }];
+	}
+
 	public ToDbEntry(): any
 	{
 		let base         = super.ToDbEntry();

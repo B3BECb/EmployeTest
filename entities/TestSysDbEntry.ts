@@ -4,6 +4,11 @@ abstract class TestSysDbEntry
 	{
 		throw "NotImplemented";
 	}
+
+	public static IncludeDependencies()
+	{
+		return [];
+	}
 }
 
 export { TestSysDbEntry };
