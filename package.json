@@ -11,6 +11,6 @@
   "main": "app.js",
   "scripts": {
     "start": "electron .",
-    "package-win": "electron-packager app new_employe_test --overwrite --platform=win32 --arch=ia32 --asar=false --icon=assets/icons/win/icon.ico --prune=true --out=release-builds --version-string.ProductName=\"Employe test App\""
+    "package-win": "electron-packager . new_employe_test --ignore=.idea --overwrite --platform=win32 --arch=ia32 --asar=true --icon=assets/icons/win/icon.ico --prune=true --out=release-builds --version-string.ProductName=\"Employe test App\""
   }
 }
