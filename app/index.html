@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang = "en">
+<head>
+	<meta charset = "UTF-8">
+	<title>ЭС подбора кадров</title>
+	<style>
+		body
+		{
+			margin: 0;
+		}
+
+		body.dialogMode
+		{
+			overflow: hidden;
+		}
+
+		.dialog,
+		.startDialog
+		{
+			display:        flex;
+			flex-direction: column;
+			align-items:    center;
+		}
+
+		.startDialog div
+		{
+			display:           grid;
+			grid-auto-columns: 300px;
+			margin-bottom:     8px;
+			background:        bisque
+		}
+
+		#state
+		{
+			position:        fixed;
+			left:            0;
+			bottom:          0;
+			background:      rgba(177, 186, 218, 0.31);
+
+			height:          30px;
+
+			display:         flex;
+			justify-content: center;
+			align-items:     center;
+		}
+
+		#state .text
+		{
+			margin: 0 8px;
+		}
+
+		.hidden
+		{
+			display: none;
+		}
+
+		.dialog
+		{
+			position:        fixed;
+			width:           100vw;
+			height:          100vh;
+			z-index:         10;
+			background:      rgba(0, 0, 0, 0.3);
+			justify-content: center;
+		}
+
+		.dialog .window
+		{
+			background: whitesmoke;
+			padding:    8px;
+		}
+
+		.dialog .window .title
+		{
+			font-weight:    bold;
+			padding-bottom: 8px;
+		}
+
+		.dialog .window .body,
+		.dialog .window .body .section,
+		.dialog .window .buttons
+		{
+			margin-top: 8px;
+		}
+
+		.dialog .window .body textarea,
+		.dialog .window .body select
+		{
+			width: calc(100% - 8px);
+		}
+
+		.dialog .window .body textarea
+		{
+			resize: none;
+			height: 100px;
+		}
+
+		.dialog .window .buttons
+		{
+			display:         flex;
+			justify-content: flex-end;
+		}
+
+		.dialog .window .buttons button
+		{
+			margin-left: 8px;
+		}
+
+		.btn.next.fixed
+		{
+			position: fixed;
+			right:    8px;
+			bottom:   8px;
+
+			height:   30px;
+			width:    70px;
+		}
+
+		.questions
+		{
+			display:        flex;
+			flex-direction: column;
+			padding:        8px;
+		}
+
+		.question
+		{
+			display: none;
+		}
+
+		.question.current
+		{
+			display: block;
+		}
+
+		.question .content
+		{
+			margin-bottom: 8px;
+		}
+
+		.job
+		{
+			margin-bottom: 8px;
+			background:    azure;
+			padding:       8px;
+		}
+
+		.fin
+		{
+			display:         flex;
+			padding:         8px;
+			justify-content: center;
+			align-items:     center;
+			flex-direction:  column;
+			height:          calc(100vh - 16px);
+		}
+	</style>
+</head>
+<body>
+<div id = "dialog"
+	 class = "dialog hidden">
+	<div id = "_wndNewStud"
+		 class = "window hidden">
+		<div class = "title">Добавить образование</div>
+		<div class = "body">
+			<div class = "section">
+				<div class = "section">
+					<label for = "_cmbStud">Уровень образования:</label>
+				</div>
+				<div class = "section">
+					<select id = "_cmbStud"></select>
+				</div>
+			</div>
+			<div class = "section">
+				<div>
+					<label for = "_txtStudComment">Комментарий:</label>
+				</div>
+				<div>
+					<textarea id = "_txtStudComment"></textarea>
+				</div>
+			</div>
+		</div>
+		<div class = "buttons">
+			<button data-action = "ok">ОК</button>
+			<button data-action = "cancel"
+					data-dialog-id = "_wndNewStud">Отмена
+			</button>
+		</div>
+	</div>
+	<div id = "_wndNewExp"
+		 class = "window hidden">
+		<div class = "title">Добавить опыт работы</div>
+		<div class = "body">
+			<div class = "section">
+				<div class = "section">
+					<label for = "_cmbExp">Опыт работы:</label>
+				</div>
+				<div class = "section">
+					<select id = "_cmbExp"></select>
+				</div>
+			</div>
+			<div class = "section">
+				<div>
+					<label for = "_txtExpComment">Комментарий:</label>
+				</div>
+				<div>
+					<textarea id = "_txtExpComment"></textarea>
+				</div>
+			</div>
+		</div>
+		<div class = "buttons">
+			<button data-action = "ok">ОК</button>
+			<button data-action = "cancel"
+					data-dialog-id = "_wndNewExp">Отмена
+			</button>
+		</div>
+	</div>
+</div>
+<div id = "mainContainer">
+	<div>Инициализация приложения</div>
+	<div data-id = "percent"></div>
+	<div data-id = "status"></div>
+</div>
+<div id = "state">
+	<span class = "text"
+		  data-id = "state">Инициализация...</span>
+</div>
+</body>
+</html>
+<script>
+	document.addEventListener('DOMContentLoaded', () =>
+	{
+		require("./renderer.js");
+	});
+</script>
+<template id = "startDialog">
+	<div class = "startDialog">
+		<div style = "margin-top: 8px;">
+			<label for = "_txtFio">ФИО:</label><input type = "text"
+													  id = "_txtFio">
+		</div>
+		<div>
+			<label for = "_txtComment">Дополнительная информация:</label>
+			<textarea id = "_txtComment"
+					  style = "height: 200px; resize: none;"></textarea>
+		</div>
+		<div>
+			<label for = "_cmbFam">Тип семейного положения:</label><select id = "_cmbFam"></select>
+		</div>
+		<div>
+			<label for = "_cmbAge">Возраст:</label><select id = "_cmbAge"></select>
+		</div>
+		<div>
+			<div id = "_lstStuds"></div>
+			<button id = "_btnNewStud">+ образование</button>
+		</div>
+		<div>
+			<div id = "_lstExps"></div>
+			<button id = "_btnNewExp">+ опыт работы</button>
+		</div>
+	</div>
+	<button class = "btn next fixed">Далее</button>
+</template>
+<template id = "testDialog">
+	<div class = "questions">
+
+		<!-- не конфликтный работник -->
+
+		<div class = "question current"
+			 data-type = "bisnes"
+			 data-rating = "25">
+			<div class = "content">
+				Представьте, что в общественном транспорте или на рынке начинается спор. Вы:
+			</div>
+			<div class = "answers">
+				<div>
+					<input type = "radio"
+						   name = "q1"
+						   value = "0"> не вмешиваетесь
+				</div>
+				<div>
+					<input type = "radio"
+						   name = "q1"
+						   value = "50"> вмешаетесь и встанете на сторону того, кто, по вашему мнению, прав
+				</div>
+				<div>
+					<input type = "radio"
+						   name = "q1"
+						   value = "100"> ни за что не пройдете мимо и будете скандалить до победного конца
+				</div>
+			</div>
+		</div>
+		<div class = "question"
+			 data-type = "bisnes"
+			 data-rating = "25">
+			<div class = "content">
+				Когда вы присутствуете на каком-либо собрании, вы:
+			</div>
+			<div class = "answers">
+				<div>
+					<input type = "radio"
+						   name = "q2"
+						   value = "0"> никогда не лезете с предложениями и критикой
+				</div>
+				<div>
+					<input type = "radio"
+						   name = "q2"
+						   value = "50"> иногда выступаете по какому либо поводу
+				</div>
+				<div>
+					<input type = "radio"
+						   name = "q2"
+						   value = "100"> постоянно критикуете и выступаете
+				</div>
+			</div>
+		</div>
+
+		<!-- хорошый работник -->
+
+		<div class = "question"
+			 data-type = "bisnes"
+			 data-rating = "25">
+			<div class = "content">
+				Ваш начальник вызывает к себе всех сотрудников и сообщает пренеприятное известие: надо поработать
+				сверхурочно. Но заставлять никого не будет, пусть вызовутся сами. Вы:
+			</div>
+			<div class = "answers">
+				<div>
+					<input type = "radio"
+						   name = "q3"
+						   value = "100"> несомненно, предложите свою кандидатуру, всегда рады поработать на благо
+										  предприятия
+				</div>
+				<div>
+					<input type = "radio"
+						   name = "q3"
+						   value = "70"> скромно предложите свои услуги, не забыв сделать при этом мученическое
+										 выражение лица
+				</div>
+				<div>
+					<input type = "radio"
+						   name = "q3"
+						   value = "0"> с наглым видом будете смотреть на начальника, даже не думая предлагать свою
+										кандидатуру
+				</div>
+				<div>
+					<input type = "radio"
+						   name = "q3"
+						   value = "0"> сделаете вид, что вас это абсолютно не касается
+				</div>
+			</div>
+		</div>
+		<div class = "question"
+			 data-type = "bisnes"
+			 data-rating = "25">
+			<div class = "content">
+				Вашу работу критикуют, вы:
+			</div>
+			<div class = "answers">
+				<div>
+					<input type = "radio"
+						   name = "q4"
+						   value = "0"> начинаете доказывать, что те ошибки, которые якобы есть в вашей работе, совсем
+										не ошибки и произошло досадное недоразумение
+				</div>
+				<div>
+					<input type = "radio"
+						   name = "q4"
+						   value = "100"> с готовностью выслушаете все претензии по работе, предложите взять ее назад и
+										  переделать, а также добавите свои идеи по поводу улучшения ее качества
+				</div>
+				<div>
+					<input type = "radio"
+						   name = "q4"
+						   value = "70"> выслушаете все, что вам скажет начальник, с независимым и гордым видом заберете
+										 работу назад и переделаете
+				</div>
+				<div>
+					<input type = "radio"
+						   name = "q4"
+						   value = "5"> выслушаете претензии по качеству работы и скажете, что лучше сделать вы не в
+										состоянии
+				</div>
+				<div>
+					<input type = "radio"
+						   name = "q4"
+						   value = "10"> будете переминаться с ноги на ногу, бормотать что то несвязное, извиняться и в
+										 конце концов вернете работу, практически не переделанную
+				</div>
+			</div>
+		</div>
+
+		<!-- соц.адпт работник -->
+
+		<div class = "question"
+			 data-type = "psyco"
+			 data-rating = "25">
+			<div class = "content">
+				Вы спытывает неловкость, когда вступает с кем-нибудь в разговор
+			</div>
+			<div class = "answers">
+				<div>
+					<input type = "radio"
+						   name = "q5"
+						   value = "100"> это ко мне совершенно не относится
+				</div>
+				<div>
+					<input type = "radio"
+						   name = "q5"
+						   value = "70"> мне это не свойственно в большинстве случаев
+				</div>
+				<div>
+					<input type = "radio"
+						   name = "q5"
+						   value = "50"> сомневаюсь, что это можно отнести ко мне
+				</div>
+				<div>
+					<input type = "radio"
+						   name = "q5"
+						   value = "20"> это похоже на меня, но нет уверенности
+				</div>
+				<div>
+					<input type = "radio"
+						   name = "q5"
+						   value = "0"> это точно про меня
+				</div>
+			</div>
+		</div>
+		<div class = "question"
+			 data-type = "psyco"
+			 data-rating = "25">
+			<div class = "content">
+				Нет желания раскрываться перед другими
+			</div>
+			<div class = "answers">
+				<div>
+					<input type = "radio"
+						   name = "q6"
+						   value = "100"> это ко мне совершенно не относится
+				</div>
+				<div>
+					<input type = "radio"
+						   name = "q6"
+						   value = "70"> мне это не свойственно в большинстве случаев
+				</div>
+				<div>
+					<input type = "radio"
+						   name = "q6"
+						   value = "50"> сомневаюсь, что это можно отнести ко мне
+				</div>
+				<div>
+					<input type = "radio"
+						   name = "q6"
+						   value = "20"> это похоже на меня, но нет уверенности
+				</div>
+				<div>
+					<input type = "radio"
+						   name = "q6"
+						   value = "0"> это точно про меня
+				</div>
+			</div>
+		</div>
+
+		<!-- быстро адапт к мен усл работник -->
+
+		<div class = "question"
+			 data-type = "psyco"
+			 data-rating = "25">
+			<div class = "content">
+				Вы приходите в ресторан, в нем есть экзотическое меню, наряду с обычным. Заинтересует ли оно Вас?
+			</div>
+			<div class = "answers">
+				<div>
+					<input type = "radio"
+						   name = "q7"
+						   value = "0"> нет, я предпочитаю знакомые блюда
+				</div>
+				<div>
+					<input type = "radio"
+						   name = "q7"
+						   value = "100"> конечно! Я люблю все новое
+				</div>
+				<div>
+					<input type = "radio"
+						   name = "q7"
+						   value = "70"> да, но подробно расспросшу про каждое блюдо у официанта
+				</div>
+				<div>
+					<input type = "radio"
+						   name = "q7"
+						   value = "20"> я опасаюсь экспериментировать с незнакомой едой
+				</div>
+			</div>
+		</div>
+		<div class = "question"
+			 data-type = "psyco"
+			 data-rating = "25">
+			<div class = "content">
+				Насколько вы современны? Нравится ли Вам ваше время?
+			</div>
+			<div class = "answers">
+				<div>
+					<input type = "radio"
+						   name = "q8"
+						   value = "0"> О, нет, я, скорее, консерватор. Раньше было лучше, многие важные ценности
+										утеряны
+				</div>
+				<div>
+					<input type = "radio"
+						   name = "q8"
+						   value = "100"> Конечно, современен! Мы живем в лучшее время
+				</div>
+				<div>
+					<input type = "radio"
+						   name = "q8"
+						   value = "20"> Да, но мне хотелось бы жить в другую Эпоху. И я точно знаю в какую
+				</div>
+				<div>
+					<input type = "radio"
+						   name = "q8"
+						   value = "70"> Не бывает простых времен. Мы живем в тяжелое время, но и другие были не лучше
+				</div>
+			</div>
+		</div>
+
+		<!-- знан яп работник -->
+
+		<div class = "question"
+			 data-type = "prof"
+			 data-rating = "25">
+			<div class = "content">
+				Верно ли следующее утверждение:
+				Содержимое тэга script нужно заключать в комментарии &lt;!-- --&gt;, чтобы браузеры, которые не
+				поддерживают
+				javascript, работали корректно ?
+			</div>
+			<div class = "answers">
+				<div>
+					<input type = "radio"
+						   name = "q9"
+						   value = "0"> Да
+				</div>
+				<div>
+					<input type = "radio"
+						   name = "q9"
+						   value = "100"> Нет
+				</div>
+			</div>
+		</div>
+		<div class = "question"
+			 data-type = "prof"
+			 data-rating = "25">
+			<div class = "content">
+				В каком случае из перечисленных событие не попадет на обработку javascript?
+			</div>
+			<div class = "answers">
+				<div>
+					<input type = "radio"
+						   name = "q10"
+						   value = "0"> Если в момент его наступления обрабатывается другое событие
+				</div>
+				<div>
+					<input type = "radio"
+						   name = "q10"
+						   value = "0"> Если страничка просматривается локально, т.е offline
+				</div>
+				<div>
+					<input type = "radio"
+						   name = "q10"
+						   value = "100"> Только если javascript отключен
+				</div>
+			</div>
+		</div>
+
+		<!-- знан субд работник -->
+
+		<div class = "question"
+			 data-type = "prof"
+			 data-rating = "25">
+			<div class = "content">
+				Строка таблицы СУБД содержит
+			</div>
+			<div class = "answers">
+				<div>
+					<input type = "radio"
+						   name = "q11"
+						   value = "100"> информацию о совокупности однотипных объектов
+				</div>
+				<div>
+					<input type = "radio"
+						   name = "q11"
+						   value = "0"> информацию о совокупности всех объектов, относящихся к некоторой предметной
+										области
+				</div>
+				<div>
+					<input type = "radio"
+						   name = "q11"
+						   value = "0"> Информацию о конкретном объекте
+				</div>
+			</div>
+		</div>
+		<div class = "question"
+			 data-type = "prof"
+			 data-rating = "25">
+			<div class = "content">
+				Полем данных в СУБД называют
+			</div>
+			<div class = "answers">
+				<div>
+					<input type = "radio"
+						   name = "q12"
+						   value = "100"> Значение атрибута для конкретного объекта
+				</div>
+				<div>
+					<input type = "radio"
+						   name = "q12"
+						   value = "0"> элемент структуры таблицы
+				</div>
+				<div>
+					<input type = "radio"
+						   name = "q12"
+						   value = "0"> список значений атрибута для всех однотипных объектов
+				</div>
+			</div>
+		</div>
+	</div>
+</template>
+<template id = "allowedJobsDialog">
+	<div class = "jobs">
+
+	</div>
+	<button class = "btn next fixed">Далее</button>
+</template>
+<template id = "job">
+	<div class = "job">
+		<div style = "margin-bottom: 8px">
+			<input type = "checkbox"
+				   name = "job">
+			<span data-id = "Name"
+				  style = "font-weight: bold"></span>
+		</div>
+		<div data-id = "Payment">З/П:</div>
+		<div data-id = "Employment">Занятость:</div>
+		<div data-id = "Comment">Особенности:</div>
+	</div>
+</template>
+<template id = "noChance">
+	<div class = "fin">
+		<div>
+			Благодарим Вас за прохождение собеседования.
+		</div>
+		<div>
+			Наш специалист по кадрам в скором времени Вам перезвонит.
+		</div>
+	</div>
+</template>
