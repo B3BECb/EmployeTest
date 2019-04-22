@@ -4,7 +4,7 @@ const shell                  = require('shelljs');
 const join                   = path.join;
 const spawn                  = require('child_process').spawn;
 
-import { AppConsts } from "./appConsts";
+import { AppConsts } from "./app/appConsts";
 
 let mainWindow;
 let mongoProcess;
@@ -35,7 +35,7 @@ function createWindow(page)
 const beginStartingMongo = function(appRoot)
 {
 	console.log(logTag, 'trying to start mongod process');
-	let path = join(appRoot, 'bin', 'mongod');
+	let path = join(appRoot, 'app', 'bin', 'mongod');
 	if(process.platform === 'win32')
 	{
 		path += '.exe';

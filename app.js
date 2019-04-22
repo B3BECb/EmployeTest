@@ -5,7 +5,7 @@ const path = require('path');
 const shell = require('shelljs');
 const join = path.join;
 const spawn = require('child_process').spawn;
-const appConsts_1 = require("./appConsts");
+const appConsts_1 = require("./app/appConsts");
 let mainWindow;
 let mongoProcess;
 const logTag = '[NOSQLCLIENT]';
@@ -26,7 +26,7 @@ function createWindow(page) {
 }
 const beginStartingMongo = function (appRoot) {
     console.log(logTag, 'trying to start mongod process');
-    let path = join(appRoot, 'bin', 'mongod');
+    let path = join(appRoot, 'app', 'bin', 'mongod');
     if (process.platform === 'win32') {
         path += '.exe';
     }
