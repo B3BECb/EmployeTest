@@ -6,7 +6,11 @@
     "mongoose": "latest",
     "@types/mongoose": "latest",
     "@types/mongodb": "latest",
-    "shelljs": "latest"
+    "shelljs": "latest",
+    "electron-packager": "latest"
   },
-  "main": "app.js"
+  "main": "app.js",
+  "scripts": {
+    "package-win": "electron-packager . new_employe_test --overwrite --platform=win32 --arch=ia32 --asar=true --icon=assets/icons/win/icon.ico --prune=true --out=release-builds --version-string.ProductName=\"Employe test App\""
+  }
 }
