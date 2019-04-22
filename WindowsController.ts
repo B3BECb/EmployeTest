@@ -353,6 +353,8 @@ class WindowsController
 		if(!allowedJobs.length)
 		{
 			showFinal();
+			this.StateInput.textContent = "Готово";
+			return;
 		}
 
 		let jobsPage = (document.querySelector("#allowedJobsDialog") as HTMLTemplateElement)
@@ -430,12 +432,15 @@ class WindowsController
 							studs: CommentableEntitieBase[],
 							exps: CommentableEntitieBase[]): number
 	{
-		let values = [age.Rate,
-			fam.Rate,
-			...studs.map(x => x.RatedEntitie.Rate),
-			...exps.map(x => x.RatedEntitie.Rate)];
+		let rates = studs.map(x => this.CalcOrOperation(x.RatedEntitie.Rate, 70));
+		let studRate = Math.max.apply(null, rates);
+		rates = exps.map(x => this.CalcOrOperation(x.RatedEntitie.Rate, 30));
+		let expRate = Math.max.apply(null, rates);
 
-		return Math.max.apply(null, values);
+		return Math.max(age.Rate,
+			fam.Rate,
+			studRate,
+			expRate);
 	}
 
 	private ShowDialog(id: string)

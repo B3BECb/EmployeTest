@@ -223,6 +223,8 @@ class WindowsController {
         };
         if (!allowedJobs.length) {
             showFinal();
+            this.StateInput.textContent = "Готово";
+            return;
         }
         let jobsPage = document.querySelector("#allowedJobsDialog")
             .content
@@ -272,11 +274,11 @@ class WindowsController {
         return cfA + cfB - cfA * cfB / 100;
     }
     CalcInitialRate(age, fam, studs, exps) {
-        let values = [age.Rate,
-            fam.Rate,
-            ...studs.map(x => x.RatedEntitie.Rate),
-            ...exps.map(x => x.RatedEntitie.Rate)];
-        return Math.max.apply(null, values);
+        let rates = studs.map(x => this.CalcOrOperation(x.RatedEntitie.Rate, 70));
+        let studRate = Math.max.apply(null, rates);
+        rates = exps.map(x => this.CalcOrOperation(x.RatedEntitie.Rate, 30));
+        let expRate = Math.max.apply(null, rates);
+        return Math.max(age.Rate, fam.Rate, studRate, expRate);
     }
     ShowDialog(id) {
         this.StateInput.textContent = "Открытие диалога...";

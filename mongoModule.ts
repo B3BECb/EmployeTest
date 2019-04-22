@@ -202,11 +202,11 @@ class DbDataImpl
 		dbEntry = await this.Save(entry, RatedEntitieBase.Represent);
 		this._studs.push(dbEntry as RatedEntitieBase);
 
-		entry   = new famModel(new RatedEntitieBase("Кандидат наук", 22));
+		entry   = new famModel(new RatedEntitieBase("Кандидат наук", 30));
 		dbEntry = await this.Save(entry, RatedEntitieBase.Represent);
 		this._studs.push(dbEntry as RatedEntitieBase);
 
-		entry   = new famModel(new RatedEntitieBase("Кандидат технических наук", 30));
+		entry   = new famModel(new RatedEntitieBase("Кандидат технических наук", 40));
 		dbEntry = await this.Save(entry, RatedEntitieBase.Represent);
 		this._studs.push(dbEntry as RatedEntitieBase);
 	}
@@ -236,15 +236,15 @@ class DbDataImpl
 
 	public async ImplJobsData(jobModel: Model<any>)
 	{
-		let job     = new JobEntitie("Охранник",
+		let job     = new JobEntitie("Тестировщик",
 			this._ages[0],
 			this._studs[2],
 			this._exps[0],
 			this._fams[3],
 			this._pays[0],
-			"Охрана помещений",
+			"Тесирование приложений",
 			"Рабочая неделя",
-			10);
+			0);
 		let entry   = new jobModel(job.ToDbEntry());
 		let dbEntry = await this.Save(entry, RatedEntitieBase.Represent);
 		this._jobs.push(dbEntry as JobEntitie);

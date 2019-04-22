@@ -142,10 +142,10 @@ class DbDataImpl {
         entry = new famModel(new RatedEntitieBase_1.RatedEntitieBase("Высшее IT-направление", 20));
         dbEntry = await this.Save(entry, RatedEntitieBase_1.RatedEntitieBase.Represent);
         this._studs.push(dbEntry);
-        entry = new famModel(new RatedEntitieBase_1.RatedEntitieBase("Кандидат наук", 22));
+        entry = new famModel(new RatedEntitieBase_1.RatedEntitieBase("Кандидат наук", 30));
         dbEntry = await this.Save(entry, RatedEntitieBase_1.RatedEntitieBase.Represent);
         this._studs.push(dbEntry);
-        entry = new famModel(new RatedEntitieBase_1.RatedEntitieBase("Кандидат технических наук", 30));
+        entry = new famModel(new RatedEntitieBase_1.RatedEntitieBase("Кандидат технических наук", 40));
         dbEntry = await this.Save(entry, RatedEntitieBase_1.RatedEntitieBase.Represent);
         this._studs.push(dbEntry);
     }
@@ -167,7 +167,7 @@ class DbDataImpl {
         this._pays.push(dbEntry);
     }
     async ImplJobsData(jobModel) {
-        let job = new JobEntitie_1.JobEntitie("Охранник", this._ages[0], this._studs[2], this._exps[0], this._fams[3], this._pays[0], "Охрана помещений", "Рабочая неделя", 10);
+        let job = new JobEntitie_1.JobEntitie("Тестировщик", this._ages[0], this._studs[2], this._exps[0], this._fams[3], this._pays[0], "Тесирование приложений", "Рабочая неделя", 0);
         let entry = new jobModel(job.ToDbEntry());
         let dbEntry = await this.Save(entry, RatedEntitieBase_1.RatedEntitieBase.Represent);
         this._jobs.push(dbEntry);
